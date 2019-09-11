@@ -1,4 +1,5 @@
 ﻿
+using SimpleTCP.Reactive.Server;
 using SimpleTCP.Server;
 using System;
 using System.Collections.Generic;
@@ -6,29 +7,69 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
-
-namespace SimpleTCP
+using UniRx;
+namespace SimpleTCP.Reactive
 {
     public class SimpleReactiveTcpServer
     {
         public SimpleReactiveTcpServer()
         {
-            Delimiter = 0x13;
             StringEncoder = System.Text.Encoding.UTF8;
+            SubscribeListeners();
         }
 
-        private List<ReactiveServerListener> _listeners = new List<ReactiveServerListener>();
-        public byte Delimiter { get; set; }
+        private ReactiveCollection<ReactiveServerListener> _listeners = new ReactiveCollection<ReactiveServerListener>();
+        public byte Delimiter { get { return DelimiterSubject.Value; } set { DelimiterSubject.OnNext(value); } }
+        public BehaviorSubject<byte> DelimiterSubject { get; } = new BehaviorSubject<byte>(0x13);
         public System.Text.Encoding StringEncoder { get; set; }
         public bool AutoTrimStrings { get; set; }
 
+        public IObservable<TcpClient> ClientConnected => _ClientConnected;
+        Subject<TcpClient> _ClientConnected = new Subject<TcpClient>();
+        public IObservable<TcpClient> ClientDisconnected => _ClientDisconnected;
+        Subject<TcpClient> _ClientDisconnected = new Subject<TcpClient>();
+        public IObservable<Message> DelimiterDataReceived => _DelimiterDataReceived;
+        Subject<Message> _DelimiterDataReceived = new Subject<Message>();
+        public IObservable<Message> DataReceived => _DataReceived;
+        Subject<Message> _DataReceived = new Subject<Message>();
 
+        Message CreateMessage(TcpClient client, byte[] msg)
+            => new Message(msg, client, StringEncoder, DelimiterSubject.Value, AutoTrimStrings);
+        void SubscribeListeners()
+        {
+            Dictionary<ReactiveServerListener, CompositeDisposable> disposables
+              = new Dictionary<ReactiveServerListener, CompositeDisposable>();
+            _listeners.ObserveAdd().Subscribe(x =>
+            {
+                var z = disposables.CreateIfNotExist(x.Value);
+                x.Value.ClientConnected.Subscribe(y => _ClientConnected.OnNext(y)).ComposeTo(z);
+                x.Value.ClientDisconnected.Subscribe(y => _ClientDisconnected.OnNext(y)).ComposeTo(z);
+                x.Value.DelimiterMessage.Subscribe(y =>
+                _DelimiterDataReceived.OnNext(CreateMessage(y.Item1, y.Item2))).ComposeTo(z);
+                x.Value.EndTransmission.Subscribe(y =>
+               _DataReceived.OnNext(CreateMessage(y.Item1, y.Item2))).ComposeTo(z);
+            });
+            _listeners.ObserveReset().Subscribe(x =>
+            {
+                foreach (var item in disposables) item.Value.Dispose();
+            });
+            _listeners.ObserveRemove().Subscribe(x =>
+            {
+                if (disposables.TryGetValue(x.Value, out var composit))
+                {
+                    disposables.Remove(x.Value);
+                    composit.Dispose();
+                }
+            });
+        }
         public IEnumerable<IPAddress> GetIPAddresses()
         {
-            List<IPAddress> ipAddresses = new List<IPAddress>();
 
+            List<IPAddress> ipAddresses = new List<IPAddress>();
             IEnumerable<NetworkInterface> enabledNetInterfaces = NetworkInterface.GetAllNetworkInterfaces()
                 .Where(nic => nic.OperationalStatus == OperationalStatus.Up);
             foreach (NetworkInterface netInterface in enabledNetInterfaces)
@@ -78,9 +119,9 @@ namespace SimpleTCP
         public void BroadcastLine(string data)
         {
             if (string.IsNullOrEmpty(data)) { return; }
-            if (data.LastOrDefault() != Delimiter)
+            if (data.LastOrDefault() != DelimiterSubject.Value)
             {
-                Broadcast(data + StringEncoder.GetString(new byte[] { Delimiter }));
+                Broadcast(data + StringEncoder.GetString(new byte[] { DelimiterSubject.Value }));
             }
             else
             {
@@ -191,7 +232,7 @@ namespace SimpleTCP
 
         public SimpleReactiveTcpServer Start(IPAddress ipAddress, int port)
         {
-            Server.ReactiveServerListener listener = new Server.ReactiveServerListener(this, ipAddress, port);
+            Server.ReactiveServerListener listener = new Server.ReactiveServerListener(ipAddress, port, DelimiterSubject);
             _listeners.Add(listener);
 
             return this;
@@ -199,7 +240,11 @@ namespace SimpleTCP
 
         public void Stop()
         {
-            _listeners.All(l => l.QueueStop = true);
+            foreach (var item in _listeners)
+            {
+                item.Stop();
+            }
+
             while (_listeners.Any(l => l.Listener.Active))
             {
                 Thread.Sleep(100);
@@ -213,39 +258,6 @@ namespace SimpleTCP
             {
                 return _listeners.Sum(l => l.ConnectedClientsCount);
             }
-        }
-        //public event EventHandler<TcpClient> ClientConnected;
-        //  public event EventHandler<TcpClient> ClientDisconnected;
-        // public event EventHandler<Message> DelimiterDataReceived;
-        public event EventHandler<Message> DataReceived;
-        public IObservable<TcpClient> ClientConnected =>
-            Observable.Merge(_listeners.Select(x => x.ClientConnected));
-        public IObservable<TcpClient> ClientDisconnected =>
-            Observable.Merge(_listeners.Select(x => x.ClientDiconnected));
-        public IObservable<Message> DelimiterDataReceived =>
-            Observable.Merge(_listeners.Select(x => x.DelimiterMessage.Select(y => CreateMessage(y.Item1, y.Item2))));
-        Message CreateMessage(TcpClient client, byte[] msg)
-            => new Message(msg, client, StringEncoder, Delimiter, AutoTrimStrings);
-        internal void NotifyDelimiterMessageRx(Server.ReactiveServerListener listener, TcpClient client, byte[] msg)
-        {
-            if (DelimiterDataReceived != null)
-            {
-                Message m = new Message(msg, client, StringEncoder, Delimiter, AutoTrimStrings);
-                DelimiterDataReceived(this, m);
-            }
-        }
-
-        internal void NotifyEndTransmissionRx(Server.ReactiveServerListener listener, TcpClient client, byte[] msg)
-        {
-            if (DataReceived != null)
-            {
-                Message m = new Message(msg, client, StringEncoder, Delimiter, AutoTrimStrings);
-                DataReceived(this, m);
-            }
-        }
-        internal void NotifyClientDisconnected(Server.ReactiveServerListener listener, TcpClient disconnectedClient)
-        {
-            ClientDisconnected?.Invoke(this, disconnectedClient);
         }
 
         #region Debug logging

@@ -55,6 +55,9 @@
   <ItemGroup>
     <Compile Include="CommTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reactive\ReactiveCommTest.cs" />
+    <Compile Include="Reactive\ReactiveServerTests.cs" />
+    <Compile Include="Reactive\ReactiveServerTests2.cs" />
     <Compile Include="ServerTests.cs" />
     <Compile Include="ServerTests2.cs" />
   </ItemGroup>
@@ -63,6 +66,16 @@
       <Project>{c9c99f87-e188-49d2-a323-09fe79f39f8d}</Project>
       <Name>SimpleTCP</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>$(UserProfile)\.nuget\packages\system.threading.tasks.extensions\4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Reactive">
+      <HintPath>$(UserProfile)\.nuget\packages\system.reactive\4.1.6\lib\netstandard2.0\System.Reactive.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP", "SimpleTCP\SimpleTCP.csproj", "{C9C99F87-E188-49D2-A323-09FE79F39F8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTCP", "SimpleTCP\SimpleTCP.csproj", "{C9C99F87-E188-49D2-A323-09FE79F39F8D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP.Tests", "SimpleTCP.Tests\SimpleTCP.Tests.csproj", "{C5C05BEB-7275-4F35-B783-9955C8B04B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP_Example", "SimpleTCP_Example\SimpleTCP_Example.csproj", "{D7836679-A926-4C5C-94BE-C8B6EB664301}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{C5C05BEB-7275-4F35-B783-9955C8B04B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5C05BEB-7275-4F35-B783-9955C8B04B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5C05BEB-7275-4F35-B783-9955C8B04B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96FFED66-3735-4713-8E79-8EB13051326C}
 	EndGlobalSection
 EndGlobal
