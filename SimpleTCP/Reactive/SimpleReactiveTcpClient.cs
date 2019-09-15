@@ -44,7 +44,7 @@ namespace SimpleTCP.Reactive
             TcpClient = new TcpClient();
             TcpClient.Connect(hostNameOrIpAddress, port);
             ClientLoop = Observable.Interval(ReadLoopIntervalMs)
-                .SubscribeOn(TaskPoolScheduler.Default)
+                .SubscribeOn(ThreadPoolScheduler.Instance)
                 .Where(x => TcpClient != null && TcpClient.Connected)
                 .Where(x => !QueueStop).Subscribe(x =>
              {
@@ -67,15 +67,11 @@ namespace SimpleTCP.Reactive
             int bytesAvailable = c.Available;
             if (bytesAvailable == 0)
             {
-                Task.Delay(10);
+                Thread.Sleep(10);// Task.Delay(10);
                 return;
             }
 
             var delimiter = this.Delimiter;
-           
-
-            
-
             List<byte> bytesReceived = new List<byte>();
 
             while (c.Available > 0 && c.Connected)

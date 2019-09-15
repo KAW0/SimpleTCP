@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP.Tests", "SimpleTC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP_Example", "SimpleTCP_Example\SimpleTCP_Example.csproj", "{D7836679-A926-4C5C-94BE-C8B6EB664301}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP_ExampleAndroid", "SimpleTCP_ExampleAndroid\SimpleTCP_ExampleAndroid.csproj", "{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTCP.Android", "SimpleTCP.Android\SimpleTCP.Android.csproj", "{9001C83C-DA41-4AA2-A0C5-0C87A3F6A405}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,16 @@ Global
 		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7836679-A926-4C5C-94BE-C8B6EB664301}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9EA097-0793-4BEA-A8FA-1F6EFBD86D27}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9001C83C-DA41-4AA2-A0C5-0C87A3F6A405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9001C83C-DA41-4AA2-A0C5-0C87A3F6A405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9001C83C-DA41-4AA2-A0C5-0C87A3F6A405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9001C83C-DA41-4AA2-A0C5-0C87A3F6A405}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

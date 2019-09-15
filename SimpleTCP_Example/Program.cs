@@ -16,17 +16,17 @@ namespace SimpleTCP_Example
          SimpleTCP.Reactive.SimpleReactiveTcpClient();
         static async Task Main(string[] args)
         {
-            server = new SimpleTCP.Reactive.SimpleReactiveTcpServer();
-
-            server.ClientConnected.Subscribe(x =>
-            {
-                Console.WriteLine(x.Client.RemoteEndPoint + " Connected");
-            });
-            server.Start(2003);
-
-
-            await Task.Delay(1000);
-            ConnectTo(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2003));
+            // server = new SimpleTCP.Reactive.SimpleReactiveTcpServer();
+            //
+            // server.ClientConnected.Subscribe(x =>
+            // {
+            //     Console.WriteLine(x.Client.RemoteEndPoint + " Connected");
+            // });
+            // server.Start(2003);
+            //
+            //
+            // await Task.Delay(1000);
+            ConnectTo(new IPEndPoint(IPAddress.Parse("192.168.2.190"), 2003));
 
 
             Console.ReadLine();

@@ -12,16 +12,25 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using UniRx;
+using SimpleTCP.Platform.Windows;
+using SimpleTCP.Platform;
 namespace SimpleTCP.Reactive
 {
     public class SimpleReactiveTcpServer
     {
+        IPlatformNetworkInfoProvider Provider { get; }
         public SimpleReactiveTcpServer()
         {
+            Provider = new WindowsNetworkInfoProvider();
             StringEncoder = System.Text.Encoding.UTF8;
             SubscribeListeners();
         }
-
+        public SimpleReactiveTcpServer(IPlatformNetworkInfoProvider provider)
+        {
+            Provider = provider;
+            StringEncoder = System.Text.Encoding.UTF8;
+            SubscribeListeners();
+        }
         private ReactiveCollection<ReactiveServerListener> _listeners = new ReactiveCollection<ReactiveServerListener>();
         public byte Delimiter { get { return DelimiterSubject.Value; } set { DelimiterSubject.OnNext(value); } }
         public BehaviorSubject<byte> DelimiterSubject { get; } = new BehaviorSubject<byte>(0x13);
@@ -66,27 +75,7 @@ namespace SimpleTCP.Reactive
                 }
             });
         }
-        public IEnumerable<IPAddress> GetIPAddresses()
-        {
 
-            List<IPAddress> ipAddresses = new List<IPAddress>();
-            IEnumerable<NetworkInterface> enabledNetInterfaces = NetworkInterface.GetAllNetworkInterfaces()
-                .Where(nic => nic.OperationalStatus == OperationalStatus.Up);
-            foreach (NetworkInterface netInterface in enabledNetInterfaces)
-            {
-                IPInterfaceProperties ipProps = netInterface.GetIPProperties();
-                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
-                {
-                    if (!ipAddresses.Contains(addr.Address))
-                    {
-                        ipAddresses.Add(addr.Address);
-                    }
-                }
-            }
-
-            var ipSorted = ipAddresses.OrderByDescending(ip => RankIpAddress(ip)).ToList();
-            return ipSorted;
-        }
 
         public List<IPAddress> GetListeningIPs()
         {
@@ -99,7 +88,7 @@ namespace SimpleTCP.Reactive
                 }
             }
 
-            return listenIps.OrderByDescending(ip => RankIpAddress(ip)).ToList();
+            return listenIps.OrderByDescending(ip => Provider.RankIpAddress(ip)).ToList();
         }
 
         public void Broadcast(byte[] data)
@@ -129,64 +118,11 @@ namespace SimpleTCP.Reactive
             }
         }
 
-        private int RankIpAddress(IPAddress addr)
-        {
-            int rankScore = 1000;
 
-            if (IPAddress.IsLoopback(addr))
-            {
-                // rank loopback below others, even though their routing metrics may be better
-                rankScore = 300;
-            }
-            else if (addr.AddressFamily == AddressFamily.InterNetwork)
-            {
-                rankScore += 100;
-                // except...
-                if (addr.GetAddressBytes().Take(2).SequenceEqual(new byte[] { 169, 254 }))
-                {
-                    // APIPA generated address - no router or DHCP server - to the bottom of the pile
-                    rankScore = 0;
-                }
-            }
-
-            if (rankScore > 500)
-            {
-                foreach (var nic in TryGetCurrentNetworkInterfaces())
-                {
-                    var ipProps = nic.GetIPProperties();
-                    if (ipProps.GatewayAddresses.Any())
-                    {
-                        if (ipProps.UnicastAddresses.Any(u => u.Address.Equals(addr)))
-                        {
-                            // if the preferred NIC has multiple addresses, boost all equally
-                            // (justifies not bothering to differentiate... IOW YAGNI)
-                            rankScore += 1000;
-                        }
-
-                        // only considering the first NIC that is UP and has a gateway defined
-                        break;
-                    }
-                }
-            }
-
-            return rankScore;
-        }
-
-        private static IEnumerable<NetworkInterface> TryGetCurrentNetworkInterfaces()
-        {
-            try
-            {
-                return NetworkInterface.GetAllNetworkInterfaces().Where(ni => ni.OperationalStatus == OperationalStatus.Up);
-            }
-            catch (NetworkInformationException)
-            {
-                return Enumerable.Empty<NetworkInterface>();
-            }
-        }
 
         public SimpleReactiveTcpServer Start(int port, bool ignoreNicsWithOccupiedPorts = true)
         {
-            var ipSorted = GetIPAddresses();
+            var ipSorted = Provider.GetIPAddresses();
             bool anyNicFailed = false;
             foreach (var ipAddr in ipSorted)
             {
@@ -215,7 +151,7 @@ namespace SimpleTCP.Reactive
 
         public SimpleReactiveTcpServer Start(int port, AddressFamily addressFamilyFilter)
         {
-            var ipSorted = GetIPAddresses().Where(ip => ip.AddressFamily == addressFamilyFilter);
+            var ipSorted = Provider.GetIPAddresses().Where(ip => ip.AddressFamily == addressFamilyFilter);
             foreach (var ipAddr in ipSorted)
             {
                 try

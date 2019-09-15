@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SimpleTCP_ExampleAndroid</string>
+    <string name="action_settings">Settings</string>
+</resources>
