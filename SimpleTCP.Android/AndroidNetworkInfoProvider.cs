@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.Net;
@@ -50,71 +49,75 @@ namespace SimpleTCP.Android
             }
             if (rankScore > 500)
             {
-                foreach (var nic in TryGetCurrentNetworkInterfaces())
-                {
-                    //.Address.HostAddress
-                    //      var ipProps =nic.InetAddresses // GetSystemService(context. //nic..GetIPProperties();
-                    //      if (ipProps.GatewayAddresses.Any())
-                    //      {
-                    //          if (ipProps.UnicastAddresses.Any(u => u.Address.Equals(addr)))
-                    //          {
-                    //              // if the preferred NIC has multiple addresses, boost all //equally
-                    //              // (justifies not bothering to differentiate... IOW YAGNI)
-                    //              rankScore += 1000;
-                    //          }
-                    //          // only considering the first NIC that is UP and has a gateway //defined
-                    //          break;
-                    //     }
-                }
+                // foreach (var nic in TryGetCurrentNetworkInterfaces())
+                //  {
+                //.Address.HostAddress
+                //      var ipProps =nic.InetAddresses // GetSystemService(context. //nic..GetIPProperties();
+                //      if (ipProps.GatewayAddresses.Any())
+                //      {
+                //          if (ipProps.UnicastAddresses.Any(u => u.Address.Equals(addr)))
+                //          {
+                //              // if the preferred NIC has multiple addresses, boost all //equally
+                //              // (justifies not bothering to differentiate... IOW YAGNI)
+                //              rankScore += 1000;
+                //          }
+                //          // only considering the first NIC that is UP and has a gateway //defined
+                //          break;
+                //     }
+                // }
             }
-            return 0;
+            return rankScore;
             //return rankScore;
         }
 
-        public IEnumerable<NetworkInterface> TryGetCurrentNetworkInterfaces()
-        {
-            try
-            {
-                return FromJavaEnumeration<NetworkInterface>(NetworkInterface.NetworkInterfaces).Where(x => x.IsUp);
-            }
-            catch
-            {
-                return Enumerable.Empty<NetworkInterface>();
-            }
-        }
+        //  public IEnumerable<NetworkInterface> TryGetCurrentNetworkInterfaces()
+        //  {
+        //      try
+        //      {
+        //          return FromJavaEnumeration<NetworkInterface>//(NetworkInterface.NetworkInterfaces).Where(x => x.IsUp);
+        //      }
+        //      catch
+        //      {
+        //          return Enumerable.Empty<NetworkInterface>();
+        //      }
+        //  }
         public IEnumerable<IPAddress> GetIPAddresses()
         {
-            List<IPAddress> ipAddresses = new List<IPAddress>();
-            var networkIntefaces = Collections.List(Java.Net.NetworkInterface.NetworkInterfaces);
-            foreach (var item in networkIntefaces)
-            {
-                var AddressInterface = (item as Java.Net.NetworkInterface).InterfaceAddresses;
-                foreach (var AInterface in AddressInterface)
-                {
-                    if (AInterface.Broadcast != null)
-                        if (IPAddress.TryParse(AInterface.Address.HostAddress, out var addres))
-                            ipAddresses.Add(addres);
-                }
-            }
-            var ipSorted = ipAddresses.OrderByDescending(ip => RankIpAddress(ip)).ToList();
-            return ipSorted;
+            return Dns.GetHostAddresses(Dns.GetHostName());
         }
-        static IEnumerable<T> FromJavaEnumeration<T>(Java.Util.IEnumeration enumeration) where T : class, IJavaObject
-        {
-            while (enumeration.HasMoreElements)
-            {
-                T next;
-                try
-                {
-                    next = enumeration.NextElement().JavaCast<T>();
-
-                }
-                catch
-                {
-                    yield break;
-                }
-                yield return next;
-            }
-        }
+        // public IEnumerable<IPAddress> GetIPAddresses()
+        // {
+        //     List<IPAddress> ipAddresses = new List<IPAddress>();
+        //     var networkIntefaces = Collections.List//(Java.Net.NetworkInterface.NetworkInterfaces);
+        //     foreach (var item in networkIntefaces)
+        //     {
+        //         var AddressInterface = (item as //Java.Net.NetworkInterface).InterfaceAddresses;
+        //         foreach (var AInterface in AddressInterface)
+        //         {
+        //             if (AInterface.Broadcast != null)
+        //                 if (IPAddress.TryParse/(AInterface.Address.HostAddress,/ out var addres))
+        //                     ipAddresses.Add(addres);
+        //         }
+        //     }
+        //     var ipSorted = ipAddresses.OrderByDescending(ip => RankIpAddress//(ip)).ToList();
+        //     return ipSorted;
+        // }
+        // static IEnumerable<T> FromJavaEnumeration<T>(Java.Util.IEnumeration //enumeration) where T : class, IJavaObject
+        // {
+        //     while (enumeration.HasMoreElements)
+        //     {
+        //         T next;
+        //         try
+        //         {
+        //             next = enumeration.NextElement().JavaCast<T>();
+        //
+        //         }
+        //         catch
+        //         {
+        //             yield break;
+        //         }
+        //         yield return next;
+        //     }
+        // }
     }
 }

@@ -116,10 +116,6 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleTCP.Android\SimpleTCP.Android.csproj">
-      <Project>{9001c83c-da41-4aa2-a0c5-0c87a3f6a405}</Project>
-      <Name>SimpleTCP.Android</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SimpleTCP\SimpleTCP.csproj">
       <Project>{c9c99f87-e188-49d2-a323-09fe79f39f8d}</Project>
       <Name>SimpleTCP</Name>

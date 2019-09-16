@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SimpleTCP.Android</id>
+    <version>$version$</version>
+    <title>SimpleTCP Client/Server</title>
+    <authors>BrandonPotter</authors>
+    <owners>BrandonPotter</owners>
+    <projectUrl>https://github.com/BrandonPotter/SimpleTCP</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Android support for SimpleTCP</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>SimpleTCP socket client server tcp android</tags>
+  </metadata>
+</package>

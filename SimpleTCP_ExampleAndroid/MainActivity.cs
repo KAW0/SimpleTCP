@@ -35,8 +35,18 @@ namespace SimpleTCP_ExampleAndroid
         void Test()
         {
             var z = new AndroidNetworkInfoProvider();
+            var y = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (var item in y)
+            {
+                foreach (var item2 in item.GetAddressBytes())
+                {
+                    System.Diagnostics.Trace.WriteLine(item2);
+                }
+
+            }
             foreach (var item in z.TryGetCurrentNetworkInterfaces())
             {
+                //  item.
                 S(item.InterfaceAddresses);
             }
 
