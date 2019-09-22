@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.4</Version>
+    <Version>1.2.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Reactive" Version="4.1.6" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
   </ItemGroup>
 
 </Project>

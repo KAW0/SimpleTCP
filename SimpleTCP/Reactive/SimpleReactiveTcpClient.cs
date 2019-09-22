@@ -127,12 +127,13 @@ namespace SimpleTCP.Reactive
         {
             AsyncSubject<Message> asyncSubject = new AsyncSubject<Message>();
             var z = new CompositeDisposable();
-            z.Add(DataReceived.Subscribe(y =>
+            WriteLine(data);
+            z.Add(DataReceived.Timeout(timeout).Subscribe(y =>
             {
                 asyncSubject.OnNext(y);
                 asyncSubject.OnCompleted();
                 z.Dispose();
-            }));
+            }, e => asyncSubject.OnError(e)));
             return asyncSubject;
         }
 
