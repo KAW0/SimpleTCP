@@ -96,8 +96,6 @@ namespace SimpleTCP.Reactive
             }
         }
 
-
-
         public void Write(byte[] data)
         {
             if (TcpClient == null) { throw new Exception("Cannot send data to a null TcpClient (check to see if Connect was called)"); }
@@ -126,14 +124,13 @@ namespace SimpleTCP.Reactive
         public IObservable<Message> WriteLineAndGetReply(string data, TimeSpan timeout)
         {
             AsyncSubject<Message> asyncSubject = new AsyncSubject<Message>();
-            var z = new CompositeDisposable();
             WriteLine(data);
-            z.Add(DataReceived.Timeout(timeout).Subscribe(y =>
+            DataReceived.Timeout(timeout).Subscribe(y =>
             {
                 asyncSubject.OnNext(y);
                 asyncSubject.OnCompleted();
                 z.Dispose();
-            }, e => asyncSubject.OnError(e)));
+            }, e => asyncSubject.OnError(e));
             return asyncSubject;
         }
 
