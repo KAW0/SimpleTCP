@@ -128,8 +128,7 @@ namespace SimpleTCP.Reactive
             DataReceived.Timeout(timeout).Subscribe(y =>
             {
                 asyncSubject.OnNext(y);
-                asyncSubject.OnCompleted();
-                z.Dispose();
+                asyncSubject.OnCompleted();             
             }, e => asyncSubject.OnError(e));
             return asyncSubject;
         }
